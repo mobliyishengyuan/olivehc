@@ -6,16 +6,16 @@
 #define _OHC_LIST_H_
 
 #include <stdio.h>
-struct list_head {
+struct list_head { // 没有数据域的双链表，双链表的头部。有头节点的循环双向链表
 	struct list_head *next, *prev;
 };
 
-#define LIST_HEAD_INIT(name) { &(name), &(name) }
+#define LIST_HEAD_INIT(name) { &(name), &(name) } // 初始化，都指向自身
 
 #define LIST_HEAD(name) \
-	struct list_head name = LIST_HEAD_INIT(name)
+	struct list_head name = LIST_HEAD_INIT(name) // 赋值
 
-#define INIT_LIST_HEAD(ptr) do { \
+#define INIT_LIST_HEAD(ptr) do { \ // 初始化链表头部，指针，指向自身
 	(ptr)->next = (ptr); (ptr)->prev = (ptr); \
 } while (0)
 
@@ -25,10 +25,10 @@ struct list_head {
  * This is only for internal list manipulation where we know
  * the prev/next entries already!
  */
-static __inline__ void __list_add(struct list_head * nnew,
+static __inline__ void __list_add(struct list_head * nnew, // 在已知list_head* prev和next中间插入一个新的节点
 	struct list_head * prev,
 	struct list_head * next)
-{
+{ // 注意顺序？
 	next->prev = nnew;
 	nnew->next = next;
 	nnew->prev = prev;
@@ -43,7 +43,7 @@ static __inline__ void __list_add(struct list_head * nnew,
  * Insert a new entry after the specified head.
  * This is good for implementing stacks.
  */
-static __inline__ void list_add(struct list_head *nnew, struct list_head *head)
+static __inline__ void list_add(struct list_head *nnew, struct list_head *head) // 在指定的节点后插入新节点
 {
 	__list_add(nnew, head, head->next);
 }
@@ -56,7 +56,7 @@ static __inline__ void list_add(struct list_head *nnew, struct list_head *head)
  * Insert a new entry before the specified head.
  * This is useful for implementing queues.
  */
-static __inline__ void list_add_tail(struct list_head *nnew, struct list_head *head)
+static __inline__ void list_add_tail(struct list_head *nnew, struct list_head *head) // 在指定的节点后前插入新节点
 {
 	__list_add(nnew, head->prev, head);
 }
@@ -69,7 +69,7 @@ static __inline__ void list_add_tail(struct list_head *nnew, struct list_head *h
  * the prev/next entries already!
  */
 static __inline__ void __list_del(struct list_head * prev,
-				  struct list_head * next)
+				  struct list_head * next) // 删除list_head* prev和next之间的节点
 {
 	next->prev = prev;
 	prev->next = next;
@@ -80,7 +80,7 @@ static __inline__ void __list_del(struct list_head * prev,
  * @entry: the element to delete from the list.
  * Note: list_empty on entry does not return true after this, the entry is in an undefined state.
  */
-static __inline__ void list_del(struct list_head *entry)
+static __inline__ void list_del(struct list_head *entry) // 删除entry指向节点
 {
 	__list_del(entry->prev, entry->next);
 	entry->next = entry->prev = 0;
@@ -90,7 +90,7 @@ static __inline__ void list_del(struct list_head *entry)
  * list_del_init - deletes entry from list and reinitialize it.
  * @entry: the element to delete from the list.
  */
-static __inline__ void list_del_init(struct list_head *entry)
+static __inline__ void list_del_init(struct list_head *entry) // 从链表中删除entry指向节点，然后重新初始化其
 {
 	__list_del(entry->prev, entry->next);
 	INIT_LIST_HEAD(entry); 
@@ -100,7 +100,7 @@ static __inline__ void list_del_init(struct list_head *entry)
  * list_empty - tests whether a list is empty
  * @head: the list to test.
  */
-static __inline__ int list_empty(struct list_head *head)
+static __inline__ int list_empty(struct list_head *head) // check链表是否为空
 {
 	return head->next == head;
 }
@@ -110,9 +110,9 @@ static __inline__ int list_empty(struct list_head *head)
  * @list: the new list to add.
  * @head: the place to add it in the first list.
  */
-static __inline__ void list_splice(struct list_head *list, struct list_head *head)
+static __inline__ void list_splice(struct list_head *list, struct list_head *head) // 合并两个链表，head在前，list在后
 {
-	struct list_head *first = list->next;
+	struct list_head *first = list->next; // 这个双链表是由头节点的
 
 	if (first != list) {
 		struct list_head *last = list->prev;
@@ -133,7 +133,7 @@ static __inline__ void list_splice(struct list_head *list, struct list_head *hea
  * @member:	the name of the list_struct within the struct.
  */
 #define list_entry(ptr, type, member) \
-	((type *)((char *)(ptr)-(unsigned long)(&((type *)0)->member)))
+	((type *)((char *)(ptr)-(unsigned long)(&((type *)0)->member))) // 略复杂，待研究？
 
 /**
  * list_for_each	-	iterate over a list
@@ -142,7 +142,7 @@ static __inline__ void list_splice(struct list_head *list, struct list_head *hea
  */
 #define list_for_each(pos, head) \
 	for (pos = (head)->next; pos != (head); \
-        	pos = pos->next)
+        	pos = pos->next) // 循环链表
 
 /**
  * list_for_each_safe	-	iterate over a list safe against removal of list entry
@@ -152,11 +152,11 @@ static __inline__ void list_splice(struct list_head *list, struct list_head *hea
  */
 #define list_for_each_safe(pos, n, head) \
 	for (pos = (head)->next, n = pos->next; pos != (head); \
-		pos = n, n = pos->next)
+		pos = n, n = pos->next) // 多加一个后置指针循环，为什么是安全遍历？
 
 #define list_for_each_reverse_safe(pos, n, head) \
 	for (pos = (head)->prev, n = pos->prev; pos != (head); \
-		pos = n, n = pos->prev)
+		pos = n, n = pos->prev) // 昵称安全遍历
 
 /*
  * Double linked lists with a single pointer list head.
@@ -166,7 +166,7 @@ static __inline__ void list_splice(struct list_head *list, struct list_head *hea
  */
 
 struct hlist_node {
-	struct hlist_node *next, **pprev;
+	struct hlist_node *next, **pprev; // http://blog.sina.com.cn/s/blog_508d2c500100gdnp.html
 };
 struct hlist_head {
 	struct hlist_node *first;
