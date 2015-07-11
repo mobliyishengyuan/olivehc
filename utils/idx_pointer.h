@@ -12,7 +12,7 @@
 #define IPT_ARRAY_SIZE 4096
 
 typedef struct {
-	short	lowest;
+	short	lowest; // 最后下标，可能中间有空洞
 	void	*array[IPT_ARRAY_SIZE];
 } idx_pointer_t;
 
