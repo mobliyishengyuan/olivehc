@@ -19,12 +19,12 @@
 
 #define IPB_BEGIN	9
 #define IPB_END		32
-#define IPB_BUCKETS	((IPB_END - IPB_BEGIN) * 4 - 4 + 1)
+#define IPB_BUCKETS	((IPB_END - IPB_BEGIN) * 4 - 4 + 1) // 89
 
-#define IPB_1ST	(1L << IPB_BEGIN)
-#define IPB_2ND	(IPB_1ST * 2)
-#define IPB_3RD	(IPB_1ST * 3)
-#define IPB_4TH	(IPB_1ST * 4)
+#define IPB_1ST	(1L << IPB_BEGIN) // 512
+#define IPB_2ND	(IPB_1ST * 2) // 1024
+#define IPB_3RD	(IPB_1ST * 3) // 1536
+#define IPB_4TH	(IPB_1ST * 4) // 2048
 
 typedef struct {
 	struct list_head	queue[IPB_BUCKETS];
@@ -49,12 +49,12 @@ static inline void ipbucket_destory(ohc_ipbucket_t *ipb)
 	}
 }
 
-static inline size_t ipbucket_block_size(size_t size)
+static inline size_t ipbucket_block_size(size_t size) // ？
 {
 	size_t mask;
 
 	if(size <= IPB_4TH) {
-		mask = bit_mask(IPB_BEGIN);
+		mask = bit_mask(IPB_BEGIN); // 511
 	} else {
 		mask = bit_mask(bit_highest(size) - 2);
 	}
