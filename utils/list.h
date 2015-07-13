@@ -5,7 +5,7 @@
 #ifndef _OHC_LIST_H_
 #define _OHC_LIST_H_
 
-#include <stdio.h>
+#include <stdio.h> // http://blog.csdn.net/zcabcd123/article/details/7726333
 struct list_head { // 没有数据域的双链表，双链表的头部。有头节点的循环双向链表
 	struct list_head *next, *prev;
 };
